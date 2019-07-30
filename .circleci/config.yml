@@ -1,8 +1,24 @@
 version: 2
 jobs:
-  build:
+  will_fail:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
       - run: notacommand
+  say_hello:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "A first hello"
+workflows:
+  version: 2
+  say_hello_and_fail:
+    jobs:
+      - say_hello
+      - will_fail
+  fail_and_say_hello:
+    jobs:
+      - will_fail
+      - say_hello
