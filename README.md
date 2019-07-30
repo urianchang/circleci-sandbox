@@ -1,2 +1,2 @@
 # cici-101
-circleci sandbox
+Sandbox for testing out [CircleCI](https://circleci.com/).
