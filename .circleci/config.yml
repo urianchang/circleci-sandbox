@@ -57,6 +57,9 @@ workflows:
       # Any name can be used for the 'hold' job as long as `type: approval` is set
       - hold:
           type: approval
+          filters:
+            branches:
+              ignore: /master/
           requires:
             - pass_data
       - say_hello:
