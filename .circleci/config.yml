@@ -59,7 +59,7 @@ workflows:
           type: approval
           filters:
             branches:
-              ignore: /master/
+              ignore: /br2/
           requires:
             - pass_data
       - say_hello:
