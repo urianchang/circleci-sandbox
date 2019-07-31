@@ -31,10 +31,12 @@ jobs:
           fi
 workflows:
   version: 2
-  # say_hello_and_fail:
-  #   jobs:
-  #     - say_hello
-  #     - will_fail
+  say_hello_and_fail:
+    jobs:
+      - say_hello
+      - will_fail:
+          requires:
+            - say_hello
   fail_and_say_hello:
     jobs:
       - will_fail
