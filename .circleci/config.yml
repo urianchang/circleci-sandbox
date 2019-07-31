@@ -32,6 +32,7 @@ jobs:
 workflows:
   version: 2
   say_hello_and_fail:
+    # This workflow will fail because of the order of how data is persisted.
     jobs:
       - say_hello
       - will_fail:
@@ -40,6 +41,11 @@ workflows:
   fail_and_say_hello:
     jobs:
       - will_fail
+      - hold:
+          type: approval
+          requires:
+            - will_fail
       - say_hello:
           requires:
+            - hold
             - will_fail
