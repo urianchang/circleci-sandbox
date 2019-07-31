@@ -5,19 +5,36 @@ jobs:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
+      - run: echo "This workflow will fail"
+      - run: mkdir -p my_workspace
+      - run: echo "Can we pass this to another workspace?" > my_workspace/echo-output
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory
+          root: my_workspace
+          paths:
+            - echo-output
       - run: notacommand
   say_hello:
     docker:
       - image: circleci/ruby:2.4.1
     steps:
       - checkout
-      - run: echo "A first hello"
+      - run: echo "Hello world!"
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: my_workspace
+      - run: |
+          if [[ $(cat my_workspace/echo-output) == "Can we pass this to another workspace?" ]]; then
+            echo "Woot! It worked!";
+          else
+            echo "Nope!"; exit 1
+          fi
 workflows:
   version: 2
-  say_hello_and_fail:
-    jobs:
-      - say_hello
-      - will_fail
+  # say_hello_and_fail:
+  #   jobs:
+  #     - say_hello
+  #     - will_fail
   fail_and_say_hello:
     jobs:
       - will_fail
