@@ -13,7 +13,7 @@ jobs:
           root: my_workspace
           paths:
             - echo-output
-      # - run: notacommand
+      - run: notacommand
   say_hello:
     docker:
       - image: circleci/ruby:2.4.1
@@ -38,4 +38,6 @@ workflows:
   fail_and_say_hello:
     jobs:
       - will_fail
-      - say_hello
+      - say_hello:
+          requires:
+            - will_fail
