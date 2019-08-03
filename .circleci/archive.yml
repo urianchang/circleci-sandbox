@@ -1,0 +1,69 @@
+version: 2
+jobs:
+  pass_data:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Going to pass some data to another job"
+      - run: mkdir -p my_workspace
+      - run: echo "Can we pass this to another workspace?" > my_workspace/echo-output
+      - persist_to_workspace:
+          # Must be an absolute path, or relative path from working_directory
+          root: my_workspace
+          paths:
+            - echo-output
+  # will_fail:
+  #   docker:
+  #     - image: circleci/ruby:2.4.1
+  #   steps:
+  #     - checkout
+  #     - run: echo "This workflow will fail"
+  #     - run: mkdir -p my_workspace
+  #     - run: echo "Can we pass this to another workspace?" > my_workspace/echo-output
+  #     - persist_to_workspace:
+  #         # Must be an absolute path, or relative path from working_directory
+  #         root: my_workspace
+  #         paths:
+  #           - echo-output
+  #     - run: notacommand
+  say_hello:
+    docker:
+      - image: circleci/ruby:2.4.1
+    steps:
+      - checkout
+      - run: echo "Hello world!"
+      - attach_workspace:
+          # Must be absolute path or relative path from working_directory
+          at: my_workspace
+      - run: |
+          if [[ $(cat my_workspace/echo-output) == "Can we pass this to another workspace?" ]]; then
+            echo "Woot! It worked!";
+          else
+            echo "Nope!"; exit 1
+          fi
+workflows:
+  version: 2
+  # say_hello_and_fail:
+  #   # This workflow will fail because of the order of how data is persisted.
+  #   jobs:
+  #     - say_hello
+  #     - will_fail:
+  #         requires:
+  #           - say_hello
+  pass_data_and_say_hello:
+    jobs:
+      - pass_data
+      # Any name can be used for the 'hold' job as long as `type: approval` is set
+      - hold:
+          type: approval
+          # master branch should skip approval
+          filters:
+            branches:
+              ignore: /master/
+          requires:
+            - pass_data
+      - say_hello:
+          requires:
+            - hold
+            - pass_data
