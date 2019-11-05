@@ -12,4 +12,7 @@ jobs:
 workflows:
   doot_doot:
     jobs:
-      - job_1
+      - job_1:
+          filters:
+            tags:
+              only: /.*/
